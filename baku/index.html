@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>爆の確率計算機｜ドラクエ10 ダイス</title>
+<meta name="description" content="ドラクエ10 ラッカランのダイス「爆」で、どちらの位を引けば勝ちやすいかを計算する道具。HP と出た目を入れると、引き方ごとの勝率が出ます。早見表つき。">
+<style>
+:root{--bg:#f6f6f8;--card:#fff;--fg:#1c1e28;--sub:#5b5f6e;--line:#dcdde3;--acc:#2f7de1;--good:#2e9d5b;--bad:#d64b3c}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1e28;--card:#262938;--fg:#f1f1f4;--sub:#b3b6c4;--line:#3a3e52;--acc:#6aa8ff;--good:#5fd38a;--bad:#ff7a6b}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"BIZ UDPGothic","Hiragino Kaku Gothic ProN","Meiryo",sans-serif;line-height:1.7}
+main{max-width:860px;margin:0 auto;padding:16px}
+h1{font-size:1.6rem;margin:.6em 0 .2em}
+h2{font-size:1.2rem;margin:1.6em 0 .5em;border-left:5px solid var(--acc);padding-left:.5em}
+.lead{color:var(--sub);margin:0 0 1em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
+label{display:flex;flex-direction:column;font-size:.9rem;color:var(--sub)}
+input,select{font-size:1.3rem;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);width:7.5em}
+select{width:auto}
+.ans{font-size:1.25rem;margin-top:14px}
+.opt{display:flex;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:8px;margin:6px 0;border:1px solid var(--line)}
+.opt.best{border:2px solid var(--good);font-weight:bold}
+.opt .pct{white-space:nowrap}
+.strip{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.cell{border-radius:6px;text-align:center;padding:4px 0;color:#1c1e28}
+.cell b{display:block;font-size:1.15rem}
+.cell small{font-size:.72rem}
+ul{padding-left:1.3em}
+.note{font-size:.85rem;color:var(--sub)}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+td,th{border-bottom:1px solid var(--line);padding:6px 4px;text-align:left}
+a{color:var(--acc)}
+footer{margin:2em 0 1em;font-size:.8rem;color:var(--sub)}
+</style>
+</head>
+<body>
+<main>
+<h1>爆の確率計算機</h1>
+<p class="lead">ドラクエ10 ラッカランのダイス「爆」で、十の位と一の位のどちらを引けば勝ちやすいかを計算します。お互いが最善で打った場合の勝率です。</p>
+
+<div class="card">
+  <div class="row">
+    <label>即目（親の即勝ち）<select id="soku"><option value="100">100 だけ</option><option value="1,100">1 と 100</option><option value="">なし</option></select></label>
+    <label>あなたは<select id="role"><option value="0">子</option><option value="1">親</option></select></label>
+    <label>今の HP<input id="hp" type="number" min="1" max="30" value="10" inputmode="numeric"></label>
+    <label>出た目<input id="roll" type="number" min="1" max="100" value="90" inputmode="numeric"></label>
+  </div>
+  <div id="ans" class="ans"></div>
+  <p class="note" id="start"></p>
+</div>
+
+<h2>早見表：相手に渡す HP</h2>
+<p>どちらを引いても次は相手の番なので、比べるのは「引いた後に相手へ渡す HP」だけです。数字の下は、その HP を相手に渡した時のあなたの勝率です（上で選んだ即目と立場で計算）。</p>
+<div class="card"><div id="strip" class="strip"></div></div>
+<ul>
+  <li><b>× 0 以下になる方は絶対に引かない</b>（爆発）</li>
+  <li><b>① 1〜4 で渡せるなら、小さいほど良い</b></li>
+  <li><b>② 6〜11 は渡さない</b>（10 が最悪）</li>
+  <li><b>③ それ以外は 14 に近い方</b></li>
+</ul>
+<p class="note">この 4 つどおりに打つと、全局面を計算した最善との差は 0.3% 未満です。</p>
+
+<h2>最善手を使っていない親の見分け方</h2>
+<p>最善で打つ親は、他に選べる目がある限り、子に 6〜11 を渡しません。<b>選べたのに 6〜11 を渡したら、その親は最善手を知りません</b>。</p>
+<ul>
+  <li>例：親が HP 14 で 50 を出し、5 を引いて子に 9 を渡した（0 を引けば 14 のまま渡せた）</li>
+  <li>66 のように、どちらを引いても 6〜11 になる目は数えない</li>
+  <li>「大きい方を引く」打ち方の親は、1 局のうち約 7 割でこの手を見せます。3 局見て一度も見せなければ、早見表を知っている親と考えてよいでしょう</li>
+</ul>
+
+<h2>子の勝率のまとめ（即目 100 だけ）</h2>
+<table>
+<tr><th>打ち方</th><th>子の勝率</th><th>1 回あたり</th></tr>
+<tr><td>子も親も最善</td><td>48.2%</td><td>-3.5%</td></tr>
+<tr><td>子が「大きい方を引く」・親は最善</td><td>43.8%</td><td>-12.3%</td></tr>
+<tr><td>子は最善・親が「大きい方を引く」</td><td>52.8%</td><td>+5.6%</td></tr>
+<tr><td>（参考）ゾロ目ダイス</td><td>44.5%</td><td>-10.9%</td></tr>
+</table>
+<p class="note">子は、最善で打っても親が最善なら負け越します。負けたら倍を賭けても、平均の損は変わりません。ゲーム内のゴールドでも、遊ぶなら無理のない範囲で。ゴールドの現実のお金での売買（RMT）や詐欺は規約違反です。</p>
+
+<h2>計算の前提</h2>
+<ul class="note">
+  <li>HP 30 から、子と親が交互に 1〜100 のダイスを振る。子が先</li>
+  <li>出た目の十の位か一の位を選んで HP から引く。0 の位は「0 を引く」（HP が減らない）。1〜9 は十の位が 0、100 は 0 と 0</li>
+  <li>引いて HP が 0 以下になった方が負け</li>
+  <li>親が即目を出したら親の勝ち</li>
+  <li>ルールは親によって違います。違うルールでは数字が変わります</li>
+</ul>
+
+<footer>
+  作成: らんぷー（YouTube でドラクエ10 の鍛冶・裁縫の解説をしています）。<a href="../">ほかの道具</a><br>
+  (C) ARMOR PROJECT/BIRD STUDIO/SQUARE ENIX All Rights Reserved.
+</footer>
+</main>
+<script>
+const HP0 = 30;
+function digits(r){ return r === 100 ? [0, 0] : [Math.floor(r / 10), r % 10]; }
+function opts(r){ return [...new Set(digits(r))].sort((a, b) => a - b); }
+const cache = {};
+// V[h][w] = 子の勝率（w: 0=子の番, 1=親の番）
+function solve(soku){
+  const key = soku.join(",");
+  if (cache[key]) return cache[key];
+  const V = Array.from({length: HP0 + 1}, () => [0.5, 0.5]);
+  const after = (h, d, who) => { const n = h - d; if (n <= 0) return who === 0 ? 0 : 1; return V[n][1 - who]; };
+  for (let it = 0; it < 400; it++){
+    for (let h = 1; h <= HP0; h++){
+      for (let who = 0; who < 2; who++){
+        let s = 0;
+        for (let r = 1; r <= 100; r++){
+          if (who === 1 && soku.includes(r)) continue;
+          const vals = opts(r).map(d => after(h, d, who));
+          s += who === 0 ? Math.max(...vals) : Math.min(...vals);
+        }
+        V[h][who] = s / 100;
+      }
+    }
+  }
+  return cache[key] = {V, after};
+}
+const $ = id => document.getElementById(id);
+const pct = x => (x * 100).toFixed(1) + "%";
+function color(t){ // 0=悪い(赤) → 1=良い(緑)
+  const a = [214, 70, 60], m = [240, 190, 50], g = [60, 170, 90];
+  const [p, q, u] = t < .5 ? [a, m, t / .5] : [m, g, (t - .5) / .5];
+  return `rgb(${p.map((v, i) => Math.round(v + (q[i] - v) * u)).join(",")})`;
+}
+function render(){
+  const soku = $("soku").value ? $("soku").value.split(",").map(Number) : [];
+  const me = +$("role").value;
+  const {V, after} = solve(soku);
+  const mine = x => me === 0 ? x : 1 - x;            // 自分の勝率に直す
+  const hp = Math.min(30, Math.max(1, +$("hp").value || 1));
+  const r = Math.min(100, Math.max(1, +$("roll").value || 1));
+  let html;
+  if (me === 1 && soku.includes(r)) html = `<b>即目です。親の勝ち！</b>`;
+  else {
+    const os = opts(r).map(d => ({d, v: mine(after(hp, d, me)), n: hp - d}));
+    const best = Math.max(...os.map(o => o.v));
+    html = `HP ${hp} で 目 ${r}：<b>${os.find(o => o.v === best).d} を引く</b>` +
+      os.map(o => `<div class="opt ${o.v === best ? "best" : ""}"><span>${o.d} を引く → ${o.n <= 0 ? "爆発（負け）" : "相手に HP " + o.n}</span><span class="pct">勝率 ${pct(o.v)}</span></div>`).join("");
+  }
+  $("ans").innerHTML = html;
+  $("start").textContent = `HP 30 からの勝率（${me === 0 ? "子" : "親"}・お互い最善・子が先）：${pct(mine(V[30][0]))}`;
+  const vals = []; for (let n = 1; n <= HP0; n++) vals.push(mine(V[n][1 - me]));
+  const lo = Math.min(...vals), hi = Math.max(...vals);
+  $("strip").innerHTML = vals.map((v, i) => `<div class="cell" style="background:${color((v - lo) / (hi - lo))}"><b>${i + 1}</b><small>${pct(v)}</small></div>`).join("");
+}
+["soku", "role", "hp", "roll"].forEach(id => $(id).addEventListener("input", render));
+render();
+</script>
+</body>
+</html>
