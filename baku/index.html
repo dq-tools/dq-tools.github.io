@@ -8,94 +8,147 @@
 <title>爆の確率計算機｜ドラクエ10 ダイス</title>
 <meta name="description" content="ドラクエ10 ラッカランのダイス「爆」で、どちらの位を引けば勝ちやすいかを計算する道具。HP と出た目を入れると、引き方ごとの勝率が出ます。早見表つき。">
 <style>
-:root{--bg:#f6f6f8;--card:#fff;--fg:#1c1e28;--sub:#5b5f6e;--line:#dcdde3;--acc:#2f7de1;--good:#2e9d5b;--bad:#d64b3c}
-@media (prefers-color-scheme:dark){:root{--bg:#1c1e28;--card:#262938;--fg:#f1f1f4;--sub:#b3b6c4;--line:#3a3e52;--acc:#6aa8ff;--good:#5fd38a;--bad:#ff7a6b}}
+:root{
+  --bg:#f4f1ea;--card:#fffdf8;--fg:#24212b;--sub:#6b6676;--line:#e3ddd0;
+  --acc:#c2410c;--acc2:#f59e0b;--good:#15803d;--bad:#dc2626;--chip:#efe9dc;
+  --hero1:#3b1d0e;--hero2:#7c2d12;--shadow:0 2px 10px rgba(60,40,20,.08)
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#17151c;--card:#221f29;--fg:#f2eee6;--sub:#aaa3b5;--line:#36313f;
+  --acc:#fb923c;--acc2:#fbbf24;--good:#4ade80;--bad:#f87171;--chip:#2d2935;
+  --hero1:#1c0f08;--hero2:#5a200b;--shadow:0 2px 10px rgba(0,0,0,.35)
+}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:"BIZ UDPGothic","Hiragino Kaku Gothic ProN","Meiryo",sans-serif;line-height:1.7}
-main{max-width:860px;margin:0 auto;padding:16px}
-h1{font-size:1.6rem;margin:.6em 0 .2em}
-h2{font-size:1.2rem;margin:1.6em 0 .5em;border-left:5px solid var(--acc);padding-left:.5em}
-.lead{color:var(--sub);margin:0 0 1em}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0}
-.row{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
-label{display:flex;flex-direction:column;font-size:.9rem;color:var(--sub)}
-input,select{font-size:1.3rem;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);width:7.5em}
-select{width:auto}
-.ans{font-size:1.25rem;margin-top:14px}
-.opt{display:flex;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:8px;margin:6px 0;border:1px solid var(--line)}
-.opt.best{border:2px solid var(--good);font-weight:bold}
-.opt .pct{white-space:nowrap}
-.strip{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
-.cell{border-radius:6px;text-align:center;padding:4px 0;color:#1c1e28}
-.cell b{display:block;font-size:1.15rem}
-.cell small{font-size:.72rem}
-ul{padding-left:1.3em}
-.note{font-size:.85rem;color:var(--sub)}
-table{border-collapse:collapse;width:100%;font-size:.95rem}
-td,th{border-bottom:1px solid var(--line);padding:6px 4px;text-align:left}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"BIZ UDPGothic","Hiragino Kaku Gothic ProN","Meiryo",sans-serif;line-height:1.75;-webkit-text-size-adjust:100%}
+.hero{background:linear-gradient(135deg,var(--hero1),var(--hero2));color:#fff7ed;padding:28px 16px 64px}
+.hero .in{max-width:880px;margin:0 auto}
+.badge{display:inline-block;font-size:.78rem;letter-spacing:.05em;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:2px 12px}
+.hero h1{font-size:clamp(1.7rem,6vw,2.4rem);margin:.35em 0 .2em;line-height:1.25}
+.hero h1 span{color:#fdba74}
+.hero p{margin:0;opacity:.9;font-size:.95rem}
+main{max-width:880px;margin:-44px auto 0;padding:0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:0 0 18px;box-shadow:var(--shadow)}
+h2{font-size:1.15rem;margin:0 0 .6em;display:flex;align-items:center;gap:.5em}
+h2::before{content:"";width:6px;height:1.1em;border-radius:3px;background:linear-gradient(var(--acc2),var(--acc))}
+.lbl{font-size:.82rem;color:var(--sub);margin:0 0 6px}
+.ctl{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px}
+@media (max-width:560px){.ctl{grid-template-columns:1fr}}
+.seg{display:flex;background:var(--chip);border-radius:12px;padding:4px;gap:4px}
+.seg button{flex:1;border:0;background:transparent;color:var(--fg);font:inherit;font-size:.95rem;padding:8px 4px;border-radius:9px;cursor:pointer}
+.seg button.on{background:var(--card);color:var(--acc);font-weight:bold;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.num{display:flex;align-items:center;gap:6px}
+.num button{width:44px;height:48px;border:1px solid var(--line);background:var(--chip);color:var(--fg);border-radius:10px;font-size:1.3rem;cursor:pointer}
+.num input{width:100%;min-width:0;height:48px;text-align:center;font-size:1.5rem;font-weight:bold;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg)}
+.ans{margin-top:18px;border-top:1px dashed var(--line);padding-top:16px}
+.verdict{font-size:clamp(1.3rem,5vw,1.7rem);font-weight:bold;margin:0 0 10px}
+.verdict em{font-style:normal;color:#fff;background:var(--acc);border-radius:10px;padding:0 .4em;margin:0 .1em}
+.opt{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;margin:8px 0;border:1px solid var(--line);background:var(--bg)}
+.opt.best{border:2px solid var(--good)}
+.opt .what{font-size:.95rem;white-space:nowrap}
+.opt .bar{height:10px;border-radius:5px;background:var(--chip);overflow:hidden}
+.opt .bar i{display:block;height:100%;border-radius:5px}
+.opt .pct{font-weight:bold;font-variant-numeric:tabular-nums}
+.boom{color:var(--bad);font-weight:bold}
+.start{font-size:.85rem;color:var(--sub);margin:10px 0 0}
+.grid{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px}
+@media (max-width:640px){.grid{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.cell{border-radius:10px;text-align:center;padding:6px 0 5px;color:#1f1a14;position:relative;outline-offset:2px}
+.cell b{display:block;font-size:clamp(1rem,4.2vw,1.35rem);line-height:1.2}
+.cell small{display:block;font-size:clamp(.62rem,2.6vw,.76rem);font-variant-numeric:tabular-nums}
+.cell.mark{outline:3px solid var(--fg)}
+.legend{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--sub);margin:10px 0 0}
+.legend .g{flex:1;height:8px;border-radius:4px;background:linear-gradient(90deg,rgb(214,70,60),rgb(240,190,50),rgb(60,170,90))}
+.rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0 0}
+@media (max-width:560px){.rules{grid-template-columns:1fr}}
+.rule{display:flex;gap:10px;align-items:flex-start;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.rule .k{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:bold;color:#fff}
+.rule p{margin:0;font-size:.93rem}
+.rule p small{display:block;color:var(--sub)}
+.note{font-size:.84rem;color:var(--sub)}
+.ex{background:var(--bg);border-left:4px solid var(--acc2);border-radius:0 10px 10px 0;padding:8px 12px;margin:10px 0;font-size:.93rem}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+td,th{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left}
+th{color:var(--sub);font-weight:normal;font-size:.82rem}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.plus td{color:var(--good);font-weight:bold}
+details summary{cursor:pointer;font-weight:bold}
+details ul{margin:.6em 0 0;padding-left:1.2em}
 a{color:var(--acc)}
-footer{margin:2em 0 1em;font-size:.8rem;color:var(--sub)}
+footer{max-width:880px;margin:0 auto;padding:8px 16px 32px;font-size:.78rem;color:var(--sub)}
 </style>
 </head>
 <body>
-<main>
-<h1>爆の確率計算機</h1>
-<p class="lead">ドラクエ10 ラッカランのダイス「爆」で、十の位と一の位のどちらを引けば勝ちやすいかを計算します。お互いが最善で打った場合の勝率です。</p>
+<header class="hero"><div class="in">
+  <span class="badge">ドラクエ10 ラッカラン ダイス</span>
+  <h1>「爆」の<span>確率計算機</span></h1>
+  <p>十の位と一の位、どっちを引けば勝ちやすい？ 全局面を計算した答えを出します。</p>
+</div></header>
 
-<div class="card">
-  <div class="row">
-    <label>即目（親の即勝ち）<select id="soku"><option value="100">100 だけ</option><option value="1,100">1 と 100</option><option value="">なし</option></select></label>
-    <label>あなたは<select id="role"><option value="0">子</option><option value="1">親</option></select></label>
-    <label>今の HP<input id="hp" type="number" min="1" max="30" value="10" inputmode="numeric"></label>
-    <label>出た目<input id="roll" type="number" min="1" max="100" value="90" inputmode="numeric"></label>
+<main>
+<section class="card">
+  <h2>計算する</h2>
+  <div class="ctl">
+    <div><p class="lbl">即目（親の即勝ち）</p><div class="seg" id="soku"><button data-v="100" class="on">100 だけ</button><button data-v="1,100">1 と 100</button><button data-v="">なし</button></div></div>
+    <div><p class="lbl">あなたは</p><div class="seg" id="role"><button data-v="0" class="on">子</button><button data-v="1">親</button></div></div>
+    <div><p class="lbl">今の HP（1〜30）</p><div class="num"><button data-t="hp" data-d="-1" aria-label="HP を 1 減らす">−</button><input id="hp" type="number" min="1" max="30" value="10" inputmode="numeric"><button data-t="hp" data-d="1" aria-label="HP を 1 増やす">＋</button></div></div>
+    <div><p class="lbl">出た目（1〜100）</p><div class="num"><button data-t="roll" data-d="-1" aria-label="目を 1 減らす">−</button><input id="roll" type="number" min="1" max="100" value="90" inputmode="numeric"><button data-t="roll" data-d="1" aria-label="目を 1 増やす">＋</button></div></div>
   </div>
   <div id="ans" class="ans"></div>
-  <p class="note" id="start"></p>
-</div>
+  <p class="start" id="start"></p>
+</section>
 
-<h2>早見表：相手に渡す HP</h2>
-<p>どちらを引いても次は相手の番なので、比べるのは「引いた後に相手へ渡す HP」だけです。数字の下は、その HP を相手に渡した時のあなたの勝率です（上で選んだ即目と立場で計算）。</p>
-<div class="card"><div id="strip" class="strip"></div></div>
-<ul>
-  <li><b>× 0 以下になる方は絶対に引かない</b>（爆発）</li>
-  <li><b>① 1〜4 で渡せるなら、小さいほど良い</b></li>
-  <li><b>② 6〜11 は渡さない</b>（10 が最悪）</li>
-  <li><b>③ それ以外は 14 に近い方</b></li>
-</ul>
-<p class="note">この 4 つどおりに打つと、全局面を計算した最善との差は 0.3% 未満です。</p>
+<section class="card">
+  <h2>早見表：相手に渡す HP</h2>
+  <p class="note" style="margin-top:0">どちらを引いても次は相手の番。比べるのは「引いた後に相手へ渡す HP」だけです。数字の下は、その HP を渡した時のあなたの勝率（上で選んだ即目と立場で計算）。黒い枠は、今の目で渡せる HP です。</p>
+  <div id="grid" class="grid"></div>
+  <div class="legend"><span>負けやすい</span><div class="g"></div><span>勝ちやすい</span></div>
+  <div class="rules">
+    <div class="rule"><span class="k" style="background:var(--bad)">×</span><p><b>0 以下になる方は引かない</b><small>引いて 0 以下は爆発で負け</small></p></div>
+    <div class="rule"><span class="k" style="background:var(--good)">1</span><p><b>1〜4 で渡せるなら、小さいほど良い</b><small>HP 1 を渡すと勝率 約 84%</small></p></div>
+    <div class="rule"><span class="k" style="background:var(--acc)">2</span><p><b>6〜11 は渡さない</b><small>10 が最悪（勝率 約 38%）</small></p></div>
+    <div class="rule"><span class="k" style="background:var(--acc2)">3</span><p><b>それ以外は 14 に近い方</b><small>13〜15 あたりが安全</small></p></div>
+  </div>
+  <p class="note">子（プレイヤー）の場合の決まりです。この 4 つどおりに打つと、全局面を計算した最善との差は 0.3% 未満。</p>
+  <div class="ex">例：HP 10 で 90 が出たら、0 を引いて 10 のまま渡すと勝率 38%、9 を引いて 1 を渡すと 84%。</div>
+</section>
 
-<h2>最善手を使っていない親の見分け方</h2>
-<p>最善で打つ親は、他に選べる目がある限り、子に 6〜11 を渡しません。<b>選べたのに 6〜11 を渡したら、その親は最善手を知りません</b>。</p>
-<ul>
-  <li>例：親が HP 14 で 50 を出し、5 を引いて子に 9 を渡した（0 を引けば 14 のまま渡せた）</li>
-  <li>66 のように、どちらを引いても 6〜11 になる目は数えない</li>
-  <li>「大きい方を引く」打ち方の親は、1 局のうち約 7 割でこの手を見せます。3 局見て一度も見せなければ、早見表を知っている親と考えてよいでしょう</li>
-</ul>
+<section class="card">
+  <h2>最善手を使っていない親の見分け方</h2>
+  <p style="margin-top:0">最善で打つ親は、他に選べる目がある限り、子に 6〜11 を渡しません。<b>選べたのに 6〜11 を渡したら、その親は最善手を知りません</b>。</p>
+  <div class="ex">例：親が HP 14 で 50 を出し、5 を引いて子に 9 を渡した（0 を引けば 14 のまま渡せた）</div>
+  <p class="note">66 のように、どちらを引いても 6〜11 になる目は数えません。「大きい方を引く」打ち方の親は、1 局のうち約 7 割でこの手を見せます。他の人との勝負を 3 局見て一度も見せなければ、早見表を知っている親と考えてよいでしょう。</p>
+</section>
 
-<h2>子の勝率のまとめ（即目 100 だけ）</h2>
-<table>
-<tr><th>打ち方</th><th>子の勝率</th><th>1 回あたり</th></tr>
-<tr><td>子も親も最善</td><td>48.2%</td><td>-3.5%</td></tr>
-<tr><td>子が「大きい方を引く」・親は最善</td><td>43.8%</td><td>-12.3%</td></tr>
-<tr><td>子は最善・親が「大きい方を引く」</td><td>52.8%</td><td>+5.6%</td></tr>
-<tr><td>（参考）ゾロ目ダイス</td><td>44.5%</td><td>-10.9%</td></tr>
-</table>
-<p class="note">子は、最善で打っても親が最善なら負け越します。負けたら倍を賭けても、平均の損は変わりません。ゲーム内のゴールドでも、遊ぶなら無理のない範囲で。ゴールドの現実のお金での売買（RMT）や詐欺は規約違反です。</p>
+<section class="card">
+  <h2>子の勝率のまとめ（即目 100 だけ）</h2>
+  <table>
+    <tr><th>打ち方</th><th style="text-align:right">子の勝率</th><th style="text-align:right">1 回あたり</th></tr>
+    <tr><td>子も親も最善</td><td class="n">48.2%</td><td class="n">-3.5%</td></tr>
+    <tr><td>子が「大きい方を引く」・親は最善</td><td class="n">43.8%</td><td class="n">-12.3%</td></tr>
+    <tr class="plus"><td>子は最善・親が「大きい方を引く」</td><td class="n">52.8%</td><td class="n">+5.6%</td></tr>
+    <tr><td>（参考）ゾロ目ダイス</td><td class="n">44.5%</td><td class="n">-10.9%</td></tr>
+  </table>
+  <p class="note">子は、最善で打っても親が最善なら負け越します。負けたら倍を賭けても、平均の損は変わりません。ゲーム内のゴールドでも、遊ぶなら無理のない範囲で。ゴールドの現実のお金での売買（RMT）や詐欺は規約違反です。</p>
+</section>
 
-<h2>計算の前提</h2>
-<ul class="note">
-  <li>HP 30 から、子と親が交互に 1〜100 のダイスを振る。子が先</li>
-  <li>出た目の十の位か一の位を選んで HP から引く。0 の位は「0 を引く」（HP が減らない）。1〜9 は十の位が 0、100 は 0 と 0</li>
-  <li>引いて HP が 0 以下になった方が負け</li>
-  <li>親が即目を出したら親の勝ち</li>
-  <li>ルールは親によって違います。違うルールでは数字が変わります</li>
-</ul>
+<section class="card">
+  <details>
+    <summary>計算の前提</summary>
+    <ul class="note">
+      <li>HP 30 から、子と親が交互に 1〜100 のダイスを振る。子が先</li>
+      <li>出た目の十の位か一の位を選んで HP から引く。0 の位は「0 を引く」（HP が減らない）。1〜9 は十の位が 0、100 は 0 と 0</li>
+      <li>引いて HP が 0 以下になった方が負け</li>
+      <li>親が即目を出したら親の勝ち</li>
+      <li>ルールは親によって違います。違うルールでは数字が変わります</li>
+    </ul>
+  </details>
+</section>
+</main>
 
 <footer>
   作成: らんぷー（YouTube でドラクエ10 の鍛冶・裁縫の解説をしています）。<a href="../">ほかの道具</a><br>
   (C) ARMOR PROJECT/BIRD STUDIO/SQUARE ENIX All Rights Reserved.<br>このサイトはアクセス数を知るために Google アナリティクス（Cookie）を使っています。集めるのは閲覧の統計だけで、個人を特定する情報は集めません。（<a href="https://tools.google.com/dlpage/gaoptout?hl=ja">無効にする方法</a>）
 </footer>
-</main>
 <script>
 const HP0 = 30;
 function digits(r){ return r === 100 ? [0, 0] : [Math.floor(r / 10), r % 10]; }
@@ -124,33 +177,48 @@ function solve(soku){
 }
 const $ = id => document.getElementById(id);
 const pct = x => (x * 100).toFixed(1) + "%";
+const st = {soku: "100", role: "0"};
 function color(t){ // 0=悪い(赤) → 1=良い(緑)
   const a = [214, 70, 60], m = [240, 190, 50], g = [60, 170, 90];
   const [p, q, u] = t < .5 ? [a, m, t / .5] : [m, g, (t - .5) / .5];
   return `rgb(${p.map((v, i) => Math.round(v + (q[i] - v) * u)).join(",")})`;
 }
+function clampInput(id, lo, hi){ const el = $(id); const v = Math.min(hi, Math.max(lo, Math.round(+el.value || lo))); return v; }
 function render(){
-  const soku = $("soku").value ? $("soku").value.split(",").map(Number) : [];
-  const me = +$("role").value;
+  const soku = st.soku ? st.soku.split(",").map(Number) : [];
+  const me = +st.role;
   const {V, after} = solve(soku);
   const mine = x => me === 0 ? x : 1 - x;            // 自分の勝率に直す
-  const hp = Math.min(30, Math.max(1, +$("hp").value || 1));
-  const r = Math.min(100, Math.max(1, +$("roll").value || 1));
-  let html;
-  if (me === 1 && soku.includes(r)) html = `<b>即目です。親の勝ち！</b>`;
+  const hp = clampInput("hp", 1, 30), r = clampInput("roll", 1, 100);
+  const vals = []; for (let n = 1; n <= HP0; n++) vals.push(mine(V[n][1 - me]));
+  const lo = Math.min(...vals), hi = Math.max(...vals);
+  let html, marks = [];
+  if (me === 1 && soku.includes(r)) html = `<p class="verdict">即目！ 親の勝ち</p>`;
   else {
     const os = opts(r).map(d => ({d, v: mine(after(hp, d, me)), n: hp - d}));
     const best = Math.max(...os.map(o => o.v));
-    html = `HP ${hp} で 目 ${r}：<b>${os.find(o => o.v === best).d} を引く</b>` +
-      os.map(o => `<div class="opt ${o.v === best ? "best" : ""}"><span>${o.d} を引く → ${o.n <= 0 ? "爆発（負け）" : "相手に HP " + o.n}</span><span class="pct">勝率 ${pct(o.v)}</span></div>`).join("");
+    marks = os.filter(o => o.n > 0).map(o => o.n);
+    const b = os.find(o => o.v === best);
+    html = `<p class="verdict">HP ${hp} で 目 ${r} → <em>${b.d}</em> を引く</p>` + os.map(o => {
+      const t = o.n <= 0 ? 0 : (o.v - lo) / (hi - lo || 1);
+      return `<div class="opt ${o.v === best ? "best" : ""}"><span class="what">${o.d} を引く → ${o.n <= 0 ? `<span class="boom">爆発</span>` : "相手に HP " + o.n}</span>` +
+        `<span class="bar"><i style="width:${(o.v * 100).toFixed(1)}%;background:${o.n <= 0 ? "var(--bad)" : color(t)}"></i></span><span class="pct">${pct(o.v)}</span></div>`;
+    }).join("");
   }
   $("ans").innerHTML = html;
   $("start").textContent = `HP 30 からの勝率（${me === 0 ? "子" : "親"}・お互い最善・子が先）：${pct(mine(V[30][0]))}`;
-  const vals = []; for (let n = 1; n <= HP0; n++) vals.push(mine(V[n][1 - me]));
-  const lo = Math.min(...vals), hi = Math.max(...vals);
-  $("strip").innerHTML = vals.map((v, i) => `<div class="cell" style="background:${color((v - lo) / (hi - lo))}"><b>${i + 1}</b><small>${pct(v)}</small></div>`).join("");
+  $("grid").innerHTML = vals.map((v, i) => `<div class="cell${marks.includes(i + 1) ? " mark" : ""}" style="background:${color((v - lo) / (hi - lo))}"><b>${i + 1}</b><small>${pct(v)}</small></div>`).join("");
 }
-["soku", "role", "hp", "roll"].forEach(id => $(id).addEventListener("input", render));
+document.querySelectorAll(".seg").forEach(seg => seg.addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  seg.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
+  st[seg.id] = b.dataset.v; render();
+}));
+document.querySelectorAll(".num button").forEach(b => b.addEventListener("click", () => {
+  const el = $(b.dataset.t), lo = +el.min, hi = +el.max;
+  el.value = Math.min(hi, Math.max(lo, (+el.value || lo) + +b.dataset.d)); render();
+}));
+["hp", "roll"].forEach(id => $(id).addEventListener("input", render));
 render();
 </script>
 </body>
