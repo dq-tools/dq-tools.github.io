@@ -30,7 +30,7 @@ h2::before{content:"";width:6px;height:1.1em;border-radius:3px;background:linear
 .lbl{font-size:.82rem;color:var(--sub);margin:12px 0 6px}
 .tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px;max-height:70vh}
 table{border-collapse:collapse;width:100%;font-size:.9rem;font-variant-numeric:tabular-nums}
-th,td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+th,td{padding:5px 8px;font-variant-numeric:tabular-nums;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
 thead th{position:sticky;top:0;background:var(--chip);z-index:1;font-size:.8rem}
 tbody th{position:sticky;left:0;background:var(--card);font-weight:bold}
 tr.c200 td,tr.c200 th{background:var(--hi)}
@@ -66,7 +66,7 @@ footer{max-width:880px;margin:0 auto;padding:8px 16px 32px;font-size:.78rem;colo
 <section class="card">
   <h2>温度表</h2>
   <div class="seg" id="mode"><button data-m="n" class="on">ふつう</button><button data-m="c">会心（2 倍）</button></div>
-  <div class="lbl">数字は「出る数字の最小〜最大」。実際は 7 通りの中から同じ確率で出ます。行をタップすると 7 通りを全部出します。色の付いた行は 200℃ の倍数（地金の効果が出る温度）。</div>
+  <div class="lbl">出る数字を全部並べています（7 通りの中から同じ確率で出ます。同じ数字が 2 回あるものは 1 つにまとめました）。この表に無い数字で止まったら、ふつうの数字ではありません。行をタップすると、その温度の「ふつう」と「会心」を並べて出します。色の付いた行は 200℃ の倍数（地金の効果が出る温度）。</div>
   <div class="tw"><table id="tb"></table></div>
   <p class="note" id="seven"></p>
 </section>
@@ -100,7 +100,8 @@ const DATA = {"2000": {"x0.5": [9, 11, 11, 12, 12, 14, 14], "x0.8": [15, 17, 18,
 const TEMPS = Object.keys(DATA).map(Number).sort((a, b) => b - a);
 let mode = "n", openT = null;
 const lab = t => t === 2000 ? "2000℃以上" : t + "℃";
-function cell(arr) { const k = mode === "c" ? 2 : 1; return (arr[0] * k) + "〜" + (arr[6] * k); }
+const uniq = (arr, k) => [...new Set(arr.map(x => x * k))];
+function cell(arr) { const k = mode === "c" ? 2 : 1; return uniq(arr, k).join(" "); }
 function drawTable() {
   let h = "<thead><tr><th>温度</th>" + MULTS.map(m => `<th title="${m[2]}">${m[1]}<br><span style="font-weight:normal">${m[2].split("・")[0]}など</span></th>`).join("") + "</tr></thead><tbody>";
   for (const t of TEMPS) {
@@ -113,8 +114,7 @@ function drawTable() {
 function drawSeven() {
   const el = document.getElementById("seven");
   if (openT === null) { el.textContent = ""; return; }
-  const k = mode === "c" ? 2 : 1;
-  el.innerHTML = `<b>${lab(openT)} の 7 通り${k === 2 ? "（会心）" : ""}</b>：` + MULTS.map(m => `${m[1]} ${DATA[openT][m[0]].map(x => x * k).join("・")}`).join(" ／ ");
+  el.innerHTML = `<b>${lab(openT)}</b>` + MULTS.map(m => `<div>${m[1]}　ふつう ${uniq(DATA[openT][m[0]], 1).join(" ")}　／　会心 ${uniq(DATA[openT][m[0]], 2).join(" ")}</div>`).join("");
 }
 document.querySelectorAll("#mode button").forEach(b => b.onclick = () => {
   mode = b.dataset.m; document.querySelectorAll("#mode button").forEach(x => x.classList.toggle("on", x === b)); drawTable();
