@@ -46,9 +46,17 @@ footer{max-width:880px;margin:0 auto;padding:8px 16px 32px;font-size:.78rem;colo
 <header class="hero"><div class="in">
   <span class="badge">ドラクエ10 鍛冶（武器・防具・道具）</span>
   <h1>鍛冶の<span>温度表</span></h1>
-  <p>温度と技ごとに出る数字。会心の時の数字と、会心を狙う距離の計算つき。</p>
+  <p>温度と技ごとに出る数字を全部。会心の時の数字と、会心を狙う距離の計算つき。</p>
 </div></header>
 <main>
+
+<section class="card">
+  <h2>温度表</h2>
+  <div class="seg" id="mode"><button data-m="n" class="on">ふつう</button><button data-m="c">会心（2 倍）</button></div>
+  <div class="lbl">出る数字を全部並べています（7 通りの中から同じ確率で出ます。同じ数字が 2 回あるものは 1 つにまとめました）。この表に無い数字で止まったら、ふつうの数字ではありません。行をタップすると、その温度の「ふつう」と「会心」を並べて出します。色の付いた行は 200℃ の倍数（地金の効果が出る温度）。</div>
+  <div class="tw"><table id="tb"></table></div>
+  <p class="note" id="seven"></p>
+</section>
 
 <section class="card">
   <h2>狙い距離の計算</h2>
@@ -61,14 +69,6 @@ footer{max-width:880px;margin:0 auto;padding:8px 16px 32px;font-size:.78rem;colo
   <div class="res" id="cres"></div>
   <div class="tw" style="max-height:none;margin-top:8px"><table id="ctab"></table></div>
   <p class="note" id="cnote"></p>
-</section>
-
-<section class="card">
-  <h2>温度表</h2>
-  <div class="seg" id="mode"><button data-m="n" class="on">ふつう</button><button data-m="c">会心（2 倍）</button></div>
-  <div class="lbl">出る数字を全部並べています（7 通りの中から同じ確率で出ます。同じ数字が 2 回あるものは 1 つにまとめました）。この表に無い数字で止まったら、ふつうの数字ではありません。行をタップすると、その温度の「ふつう」と「会心」を並べて出します。色の付いた行は 200℃ の倍数（地金の効果が出る温度）。</div>
-  <div class="tw"><table id="tb"></table></div>
-  <p class="note" id="seven"></p>
 </section>
 
 <section class="card">
