@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dq-tools.github.io/sitemap.xml
